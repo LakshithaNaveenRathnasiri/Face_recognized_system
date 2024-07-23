@@ -10,8 +10,13 @@ import gdown
 
 # Function to download the model from Google Drive
 def download_model(file_id, output):
-    url = f'https://colab.research.google.com/drive/1JLjhjyBCinJxG8Of8_74ukYdIRPWxvmU?usp=sharing'
-    gdown.download(url, output, quiet=False)
+    url = f'https://drive.google.com/uc?id={file_id}'
+    try:
+        # Suppress output to avoid BrokenPipeError
+        gdown.download(url, output, quiet=False)
+    except Exception as e:
+        st.error(f"An error occurred while downloading the model: {e}")
+        raise e  # Re-raise the exception to stop execution if download fails
 
 # Define the file ID and output path for the FaceNet model
 file_id = '1JLjhjyBCinJxG8Of8_74ukYdIRPWxvmU'  # The actual file ID
@@ -39,15 +44,22 @@ def preprocess_image(image):
 def load_known_faces():
     known_face_encodings = []
     known_face_names = []
-    for person_name in os.listdir('known_faces'):
-        person_dir = os.path.join('known_faces', person_name)
-        if os.path.isdir(person_dir):
-            for image_name in os.listdir(person_dir):
-                image_path = os.path.join(person_dir, image_name)
-                image = cv2.imread(image_path)
-                face_encoding = get_face_encoding(image)
-                known_face_encodings.append(face_encoding)
-                known_face_names.append(person_name)
+    try:
+        for person_name in os.listdir('known_faces'):
+            person_dir = os.path.join('known_faces', person_name)
+            if os.path.isdir(person_dir):
+                for image_name in os.listdir(person_dir):
+                    image_path = os.path.join(person_dir, image_name)
+                    image = cv2.imread(image_path)
+                    if image is not None:
+                        face_encoding = get_face_encoding(image)
+                        known_face_encodings.append(face_encoding)
+                        known_face_names.append(person_name)
+                    else:
+                        st.warning(f"Failed to read image: {image_path}")
+    except Exception as e:
+        st.error(f"An error occurred while loading known faces: {e}")
+        raise e
     return known_face_encodings, known_face_names
 
 # Function to get face encoding using FaceNet
@@ -65,6 +77,7 @@ def detect_faces(image):
 # Function to recognize faces in the image
 def recognize_faces(image, known_face_encodings, known_face_names):
     faces = detect_faces(image)
+    st.write(f"Detected {len(faces)} faces.")
     recognized_names = []
     for (x, y, w, h) in faces:
         face_image = image[y:y+h, x:x+w]
@@ -88,9 +101,9 @@ st.title("Face Detection and Recognition App")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # Display the uploaded image
+    # Convert uploaded file to a NumPy array
     image = Image.open(uploaded_file)
-    image_np = np.array(image)
+    image_np = np.array(image.convert('RGB'))  # Ensure the image is in RGB format
     st.image(image, caption='Uploaded Image', use_column_width=True)
 
     # Recognize faces
