@@ -7,13 +7,15 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from sklearn.metrics.pairwise import cosine_similarity
 import gdown
+import sys
 
 # Function to download the model from Google Drive
 def download_model(file_id, output):
     url = f'https://colab.research.google.com/drive/1JLjhjyBCinJxG8Of8_74ukYdIRPWxvmU?usp=sharing'
     try:
-        # Suppress output to avoid BrokenPipeError
-        gdown.download(url, output, quiet=False)
+        # Suppress gdown output by redirecting stdout
+        with open(os.devnull, 'w') as fnull:
+            gdown.download(url, output, quiet=True)
     except Exception as e:
         st.error(f"An error occurred while downloading the model: {e}")
         raise e  # Re-raise the exception to stop execution if download fails
