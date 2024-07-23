@@ -4,4 +4,6 @@ opencv-python-headless==4.10.0.84
 numpy
 Pillow
 scikit-learn==1.5.1
+gdown==4.6.0
+
 
