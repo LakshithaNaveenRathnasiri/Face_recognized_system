@@ -10,7 +10,7 @@ import gdown
 
 # Function to download the model from Google Drive
 def download_model(file_id, output):
-    url = f'https://drive.google.com/uc?id={file_id}'
+    url = f'https://colab.research.google.com/drive/1JLjhjyBCinJxG8Of8_74ukYdIRPWxvmU?usp=sharing'
     try:
         # Suppress output to avoid BrokenPipeError
         gdown.download(url, output, quiet=False)
