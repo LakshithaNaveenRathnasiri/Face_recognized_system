@@ -11,7 +11,8 @@ import sys
 
 # Function to download the model from Google Drive
 def download_model(file_id, output):
-    url = f'https://drive.google.com/uc?id={1UxJQk8_uZiYdJPUXmBDy2N7qPJO75ZYx}'
+    file_id = '1UxJQk8_uZiYdJPUXmBDy2N7qPJO75ZYx'
+    url = f'https://drive.google.com/uc?id={file_id}'
     try:
         # Suppress gdown output by redirecting stdout
         with open(os.devnull, 'w') as fnull:
