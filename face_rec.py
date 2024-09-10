@@ -7,30 +7,32 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from sklearn.metrics.pairwise import cosine_similarity
 import gdown
-import sys
 
 # Function to download the model from Google Drive
 def download_model(file_id, output):
-    file_id = '1UxJQk8_uZiYdJPUXmBDy2N7qPJO75ZYx'
     url = f'https://drive.google.com/uc?id={file_id}'
     try:
-        # Suppress gdown output by redirecting stdout
-        with open(os.devnull, 'w') as fnull:
-            gdown.download(url, output, quiet=True)
+        gdown.download(url, output, quiet=False)
     except Exception as e:
         st.error(f"An error occurred while downloading the model: {e}")
         raise e  # Re-raise the exception to stop execution if download fails
 
 # Define the file ID and output path for the FaceNet model
-file_id = '1JLjhjyBCinJxG8Of8_74ukYdIRPWxvmU'  # The actual file ID
+file_id = '1UxJQk8_uZiYdJPUXmBDy2N7qPJO75ZYx'  # Correct the file ID
 output = 'facenet_keras.h5'
 
 # Download the FaceNet model from Google Drive if it doesn't exist locally
-if not os.path.exists(output):
+if not os.path.exists(output) or os.path.getsize(output) == 0:
+    st.write("Downloading the FaceNet model...")
     download_model(file_id, output)
 
-# Load the pre-trained FaceNet model
-facenet_model = load_model(output)
+# Attempt to load the pre-trained FaceNet model
+try:
+    facenet_model = load_model(output)
+    st.success("Model loaded successfully.")
+except OSError as e:
+    st.error(f"Failed to load model. The model file might be corrupted or not in the correct format. Error: {e}")
+    st.stop()
 
 # Load a pre-trained face detector
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
