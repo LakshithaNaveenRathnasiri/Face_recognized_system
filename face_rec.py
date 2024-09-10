@@ -11,7 +11,7 @@ import sys
 
 # Function to download the model from Google Drive
 def download_model(file_id, output):
-    url = f'https://colab.research.google.com/drive/1JLjhjyBCinJxG8Of8_74ukYdIRPWxvmU?usp=sharing'
+    url = f'https://drive.google.com/uc?id={1UxJQk8_uZiYdJPUXmBDy2N7qPJO75ZYx}'
     try:
         # Suppress gdown output by redirecting stdout
         with open(os.devnull, 'w') as fnull:
